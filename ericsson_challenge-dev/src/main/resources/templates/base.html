@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Title</title>
+    <!-- Include Bootstrap CSS (assicurati di avere Bootstrap disponibile nel percorso specificato) -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+    <script>
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+        }
+        function logout () {
+            const token = getCookie("authToken");
+            fetch(`/api/auth/logout`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }).then(response => {
+                if (response.ok) {
+                    setCookie("authToken","", -1);
+                    window.location.href= "/login"
+                } else {
+                    alert("Errore durante il logout");
+                }
+            });
+        }
+    </script>
+</head>
+<body style="height: 100vh; display: flex; flex-direction: column">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light container">
+
+        <a class="navbar-brand" href="/profiles">User Profile Management System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/profiles}">Visualizza utenti</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/login}" sec:authorize="isAnonymous()">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/add-profile}">Aggiungi utente</a>
+                </li>
+                <li class="nav-item" style="cursor: pointer" onclick="logout()">
+                    <a class="nav-link">Log out</a>
+                </li>
+            </ul>
+        </div>
+</nav>
+
+<!-- Main Content Area -->
+<div class="container mt-5" style="">
+    <!-- This will be replaced by the specific content of each page -->
+    <div layout:fragment="content">
+        <!-- Placeholder content or loading spinner can go here -->
+    </div>
+</div>
+
+<!-- Footer (optional) -->
+<footer class="text-center mt-4 mb-4">
+    <p>&copy; 2024 User Profile Management System. All rights reserved.</p>
+</footer>
+
+
+
+<!-- Include Bootstrap JS (assicurati di avere Bootstrap JS disponibile nel percorso specificato) -->
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+</body>
+</html>

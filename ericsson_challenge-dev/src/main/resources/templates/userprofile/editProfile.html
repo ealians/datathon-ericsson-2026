@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title th:text="'Modifica Profilo'">Modifica Profilo</title>
+</head>
+<body class="bg-light">
+<div layout:fragment="content">
+    <h1 class="text-center">Modifica Profilo</h1>
+    <form th:action="@{/profiles/edit/{id}(id=${editProfile.id})}" method="post" th:object="${editProfile}" class="mt-4">
+        <!-- Campi precompilati -->
+        <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" th:field="*{username}" class="form-control" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="firstName" class="form-label">Nome:</label>
+            <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Cognome:</label>
+            <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required/>
+        </div>
+
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Numero di telefono:</label>
+            <input type="number" id="phoneNumber" th:field="*{phoneNumber}" class="form-control"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="roles" class="form-label">Ruolo:</label>
+            <select id="roles" th:field="*{roles}" multiple="multiple" class="form-control">
+                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"
+                        th:selected="${editProfile.roles.contains(role)}"></option>
+            </select>
+            <small>Premi Ctrl (Windows) o Command (Mac) per selezionare più ruoli</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Salva Modifiche</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+<head>
+    <title th:text="'Lista Profili'">Lista Profili</title>
+    <script>
+        async function loadProfiles() {
+            const token = localStorage.getItem("authToken"); // Recupera il token dal localStorage
+            if (!token) {
+                alert("Non sei autenticato");
+                window.location.href = "/login";
+                return;
+            }
+
+            const response = await fetch("/api/profiles", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                const profiles = await response.json();
+                const tableBody = document.getElementById("profiles-table-body");
+                tableBody.innerHTML = ""; // Svuota il contenuto esistente
+
+                const isAdmin = isUserAdmin(); // Verifica se l'utente loggato è admin
+                const loggedInUserId = document.getElementById("loggedInUserId").value;
+                profiles.forEach(profile => {
+                    const row = document.createElement("tr");
+                    const roles = profile.roles.map(role => role.name).join(", ");
+                    const isCurrentUser = parseInt(profile.id) === parseInt(loggedInUserId);
+                    row.innerHTML = `
+                <td>${profile.id || "Non presente"}</td>
+                <td>${profile.username || "Non presente"}</td>
+                <td>${profile.email}</td>
+                <td>${profile.firstName}</td>
+                <td>${profile.lastName}</td>
+                <td>${profile.phoneNumber || 'Non presente'}</td>
+                <td>${roles}</td>
+                <td>
+    ${isAdmin ? `
+        <button class="btn btn-warning btn-sm" onclick="editProfile('${profile.id}')">Modifica</button>
+    ` : ''}
+    ${isAdmin && !isCurrentUser ? `
+        <button class="btn btn-danger btn-sm" onclick="deleteProfile('${profile.id}')">Elimina</button>
+    ` : ''}
+    ${!isAdmin || (!isAdmin && isCurrentUser) ? 'Nessuna azione disponibile' : ''}
+                </td>
+            `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                alert("Errore durante il caricamento dei profili. Verifica il token JWT.");
+            }
+        }
+
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error("Errore nella decodifica del token", e);
+                return null;
+            }
+        }
+
+        // Funzione per controllare se l'utente ha un ruolo specifico
+        function isUserAdmin() {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                return false;
+            }
+
+            const payload = parseJwt(token);
+            return payload && payload.rol && payload.rol.includes("ROLE_ADMIN");
+        }
+
+
+        function editProfile(id) {
+            window.location.href = `/profiles/edit/${id}`;
+        }
+
+        function deleteProfile(id) {
+            if (confirm("Sei sicuro di voler cancellare questo utente?")) {
+                const token = localStorage.getItem("authToken");
+                fetch(`/api/profiles/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert("Utente eliminato con successo");
+                        window.location.reload();
+                    } else {
+                        alert("Errore nell'eliminazione dell'utente");
+                    }
+                });
+            }
+        }
+
+        function addProfile() {
+            window.location.href = '/profiles/add-profile'
+        }
+
+        window.onload = loadProfiles;
+    </script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5" layout:fragment="content">
+    <h1 class="text-center mb-4">Lista Profili</h1>
+
+    <div class="text-end mb-3">
+        <button class="btn btn-success" onclick="addProfile()">Aggiungi Nuovo Utente</button>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Numero di Telefono</th>
+                <th>Ruoli</th>
+                <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody id="profiles-table-body"></tbody>
+        </table>
+    </div>
+    <input type="hidden" id="loggedInUserId" th:value="${loggedInUserId}">
+</div>
+
+</body>
+<!-- Includi Bootstrap JS dal WebJar -->
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+</html>
