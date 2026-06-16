@@ -34,4 +34,6 @@ public interface AuthService {
 
     ResponseEntity<AuthResponseDTO> getSession();
 
+    ResponseEntity<Boolean> adminExists();
+
 }

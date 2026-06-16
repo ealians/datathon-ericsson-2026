@@ -96,6 +96,12 @@ public class AuthControllerImpl implements AuthController {
     public ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception {
         return authService.createFirstUser(req);
     }
+
+    @Override
+    @GetMapping("/adminExists")
+    public ResponseEntity<Boolean> adminExists() {
+        return authService.adminExists();
+    }
 }
 
 

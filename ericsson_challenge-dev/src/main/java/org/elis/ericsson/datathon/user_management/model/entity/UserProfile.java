@@ -42,6 +42,7 @@ public class UserProfile extends DateAudit {
     private String phoneNumber;
 
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -59,6 +60,7 @@ public class UserProfile extends DateAudit {
 
 
     @OneToOne(mappedBy = "creationUser")
+    @JsonIgnore
     private EggUpInfo eggUpInfo;
 
     /**

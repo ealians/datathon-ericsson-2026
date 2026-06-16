@@ -24,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
@@ -46,14 +45,15 @@ public class AuthServiceImpl implements AuthService {
     private final CustomAuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RoleRepository roleRepository;
-    final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthServiceImpl(
             JwtUtility jwtUtility,
             CustomAuthenticationManager authenticationManager,
             RefreshTokenRepository refreshTokenRepository,
-            RoleRepository roleRepository, UserProfileRepository userProfileRepository, PasswordResetTokenRepository passwordResetTokenRepository, JwtUtility tokenProvider) {
+            RoleRepository roleRepository, UserProfileRepository userProfileRepository, PasswordResetTokenRepository passwordResetTokenRepository, JwtUtility tokenProvider,
+            PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtUtility = jwtUtility;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -61,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
         this.userProfileRepository = userProfileRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.tokenProvider = tokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -315,6 +316,12 @@ public class AuthServiceImpl implements AuthService {
             throw e;
         }
 
+    }
+
+    @Override
+    public ResponseEntity<Boolean> adminExists() {
+        boolean exists = userProfileRepository.count() > 0;
+        return ResponseEntity.ok(exists);
     }
 
 

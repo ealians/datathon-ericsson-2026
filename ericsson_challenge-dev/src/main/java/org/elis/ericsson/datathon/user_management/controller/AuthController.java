@@ -51,4 +51,7 @@ public interface AuthController {
 
     @GetMapping("/getSession")
     ResponseEntity<AuthResponseDTO> getSession();
+
+    @GetMapping("/adminExists")
+    ResponseEntity<Boolean> adminExists();
 }

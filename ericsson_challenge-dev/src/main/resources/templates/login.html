@@ -15,6 +15,7 @@
         // Controlla se esiste un authToken nei cookie e reindirizza a /profiles
         window.onload = function() {
             checkAuthToken();
+            checkAdminExists();
         };
 
         function parseJwt(token) {
@@ -80,11 +81,54 @@
                 alert("Login fallito, controlla le credenziali.");
             }
         }
-    </script>
 
-    <!-- Script di controllo del token -->
-    <script>
+        // Verifica esistenza admin al caricamento pagina
+        async function checkAdminExists() {
+            try {
+                const response = await fetch("/api/auth/adminExists");
+                if (response.ok) {
+                    const exists = await response.json();
+                    const btn = document.getElementById("createAdminBtn");
+                    btn.style.display = exists ? "none" : "block";
+                }
+            } catch (e) {
+                console.error("Errore verifica esistenza admin", e);
+            }
+        }
 
+        async function createFirstAdmin() {
+            const btn = document.getElementById("createAdminBtn");
+            const feedbackDiv = document.getElementById("adminFeedback");
+            btn.disabled = true;
+
+            try {
+                const response = await fetch("/api/auth/createFirstUser", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (response.ok) {
+                    btn.style.display = "none";
+                    feedbackDiv.innerHTML = '<div class="alert alert-success">Admin creato con successo! Credenziali: admin@elis.org / password</div>';
+                    feedbackDiv.style.display = "block";
+                } else {
+                    const errorText = await response.text();
+                    btn.disabled = false;
+                    feedbackDiv.innerHTML = '<div class="alert alert-danger">Errore: ' + escapeHtml(errorText) + '</div>';
+                    feedbackDiv.style.display = "block";
+                }
+            } catch (e) {
+                btn.disabled = false;
+                feedbackDiv.innerHTML = '<div class="alert alert-danger">Errore di rete.</div>';
+                feedbackDiv.style.display = "block";
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </head>
 <body class="bg-light d-flex align-items-center" style="height: 100vh;">
@@ -105,6 +149,13 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
+                    <!-- Pulsante Creazione Admin (nascosto di default, visibile solo se nessun admin esiste) -->
+                    <button type="button" id="createAdminBtn" class="btn btn-success w-100 mt-3"
+                            style="display: none;" onclick="createFirstAdmin()">
+                        Crea Primo Admin
+                    </button>
+                    <!-- Container Feedback Alert -->
+                    <div id="adminFeedback" class="mt-3" style="display: none;"></div>
                 </div>
             </div>
         </div>

@@ -7,7 +7,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +16,11 @@ import java.util.Optional;
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     private final UserProfileRepository userProfileRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public CustomAuthenticationManager(UserProfileRepository userProfileRepository) {
+    public CustomAuthenticationManager(UserProfileRepository userProfileRepository, PasswordEncoder passwordEncoder) {
         this.userProfileRepository = userProfileRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
