@@ -33,6 +33,7 @@ inclusion: always
 - Annotate validation constraints on DTOs using Jakarta Validation (`@NotNull`, `@Email`, `@Size`, etc.).
 - Keep controller methods thin — business logic belongs in service implementations.
 - Use the constants defined in `Endpoints.java`, `SecurityConstants.java`, and `ExceptionMessages.java` rather than inline strings.
+- When developing features spec files, use always java code snippets and avoid other languages like Pascal
 
 ## Security
 

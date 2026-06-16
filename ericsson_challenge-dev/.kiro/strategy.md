@@ -14,8 +14,8 @@ Evolvere l'applicazione User Profile Management per la Datathon Ericsson 2026, m
 ## Workflow di Sviluppo
 
 1. Definire i requisiti in `.kiro/specs/<uc-id>/requirements.md`
-2. Progettare la soluzione in `.kiro/specs/<uc-id>/design.md`
-3. Scomporre in task implementativi in `.kiro/specs/<uc-id>/tasks.md`
+2. Opzionale su richiesta: Progettare la soluzione in `.kiro/specs/<uc-id>/design.md`
+3. Opzionale su richiesta: Scomporre in task implementativi in `.kiro/specs/<uc-id>/tasks.md`
 4. Implementare seguendo le guardrails
 5. Testare (unit + integration)
 6. Review e merge
