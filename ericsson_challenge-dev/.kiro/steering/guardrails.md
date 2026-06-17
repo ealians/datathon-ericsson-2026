@@ -61,6 +61,4 @@ inclusion: always
 - When adding new functionality, include or suggest corresponding unit tests in `src/test/`.
 - Use the existing test framework and patterns already present in the project.
 
-## Test environment
-- If JAVA_HOME is not avaialable, use docker to run test cases
 

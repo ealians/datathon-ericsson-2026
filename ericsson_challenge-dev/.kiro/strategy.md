@@ -27,6 +27,9 @@ Evolvere l'applicazione User Profile Management per la Datathon Ericsson 2026, m
 - P2: Miglioramenti UX (error handling, validazioni frontend)
 - P3: Ottimizzazioni (caching, query optimization)
 
+## Way of working
+Il team predilige la generazione di file di specifica meno  prolissi
+
 ## Rischi
 
 | Rischio | Mitigazione |

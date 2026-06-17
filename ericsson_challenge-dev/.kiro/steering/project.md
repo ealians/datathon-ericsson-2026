@@ -23,3 +23,7 @@ Applicazione Spring Boot 3.3.5 (Java 17) per la gestione profili utente – Data
 
 - `ROLE_ADMIN`: gestione completa utenti
 - `ROLE_USER`: accesso base
+
+
+## Test environment
+- If JAVA_HOME is not avaialable, use docker to run test cases
