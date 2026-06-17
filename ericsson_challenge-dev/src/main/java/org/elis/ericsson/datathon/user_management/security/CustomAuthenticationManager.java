@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +17,16 @@ import java.util.Optional;
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     private final UserProfileRepository userProfileRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public CustomAuthenticationManager(UserProfileRepository userProfileRepository,
-                                       PasswordEncoder passwordEncoder) {
+    final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public CustomAuthenticationManager(UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
+        String email = authentication.getPrincipal() + "";
+        String password = authentication.getCredentials() + "";
 
         Optional<UserProfile> userByEmail = userProfileRepository.findByEmail(email);
 
@@ -35,7 +34,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
             throw new BadCredentialsException("Email not found");
         }
 
-        UserProfile user = userByEmail.get();
+        UserProfile user = userByEmail.orElseGet(userByEmail::get);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Password is incorrect");

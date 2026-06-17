@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.elis.ericsson.datathon.user_management.model.modelbase.DateAudit;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import java.time.Instant;
 
+@EnableAutoConfiguration
 @Getter
 @Setter
 @Entity
