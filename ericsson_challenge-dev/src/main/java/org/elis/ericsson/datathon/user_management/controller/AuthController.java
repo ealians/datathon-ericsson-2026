@@ -51,4 +51,7 @@ public interface AuthController {
 
     @GetMapping("/getSession")
     ResponseEntity<AuthResponseDTO> getSession();
+
+    @PostMapping("/createFirstUser")
+    ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception;
 }

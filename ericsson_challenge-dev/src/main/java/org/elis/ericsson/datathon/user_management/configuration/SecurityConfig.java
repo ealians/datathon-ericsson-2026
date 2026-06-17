@@ -30,6 +30,8 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
+                        // Endpoint di bootstrapping - esplicitamente pubblico con metodo HTTP specifico
+                        .requestMatchers(HttpMethod.POST, "/api/auth/createFirstUser").permitAll()
                         // Permessi per le risorse pubbliche
                         .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**", "/actuator/health", "/webjars/**", "/css/**", "/js/**").permitAll()
 

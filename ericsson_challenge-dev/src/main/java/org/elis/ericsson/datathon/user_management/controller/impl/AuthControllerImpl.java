@@ -92,6 +92,7 @@ public class AuthControllerImpl implements AuthController {
      *
      * @return the created user
      */
+    @Override
     @PostMapping("/createFirstUser")
     public ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception {
         return authService.createFirstUser(req);

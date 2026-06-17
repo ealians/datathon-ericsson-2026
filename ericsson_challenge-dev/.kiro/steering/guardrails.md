@@ -33,6 +33,7 @@ inclusion: always
 - Annotate validation constraints on DTOs using Jakarta Validation (`@NotNull`, `@Email`, `@Size`, etc.).
 - Keep controller methods thin — business logic belongs in service implementations.
 - Use the constants defined in `Endpoints.java`, `SecurityConstants.java`, and `ExceptionMessages.java` rather than inline strings.
+- When developing features spec files, use always java code snippets and avoid other languages like Pascal
 
 ## Security
 
@@ -60,6 +61,4 @@ inclusion: always
 - When adding new functionality, include or suggest corresponding unit tests in `src/test/`.
 - Use the existing test framework and patterns already present in the project.
 
-## Test environment
-- If JAVA_HOME is not avaialable, use docker to run test cases
 

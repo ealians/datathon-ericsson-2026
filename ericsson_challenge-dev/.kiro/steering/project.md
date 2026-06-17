@@ -12,6 +12,7 @@ Applicazione Spring Boot 3.3.5 (Java 17) per la gestione profili utente – Data
 - Autenticazione: JWT stateless (jjwt 0.11.5)
 - Frontend: Thymeleaf + Bootstrap 5.3.3
 - Build: Maven Wrapper
+- When creating bugfixing specifications, use the name requirements.md
 
 ## Struttura Endpoint
 
@@ -22,3 +23,8 @@ Applicazione Spring Boot 3.3.5 (Java 17) per la gestione profili utente – Data
 
 - `ROLE_ADMIN`: gestione completa utenti
 - `ROLE_USER`: accesso base
+
+
+## Test environment
+- Non eseguire `mvn` direttamente sulla macchina host; utilizzare il container Docker (WSL) per build, test e run
+

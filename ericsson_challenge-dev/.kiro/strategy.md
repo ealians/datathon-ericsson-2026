@@ -14,24 +14,16 @@ Evolvere l'applicazione User Profile Management per la Datathon Ericsson 2026, m
 ## Workflow di Sviluppo
 
 1. Definire i requisiti in `.kiro/specs/<uc-id>/requirements.md`
-2. Progettare la soluzione in `.kiro/specs/<uc-id>/design.md`
-3. Scomporre in task implementativi in `.kiro/specs/<uc-id>/tasks.md`
+2. Opzionale su richiesta: Progettare la soluzione in `.kiro/specs/<uc-id>/design.md`
+3. Opzionale su richiesta: Scomporre in task implementativi in `.kiro/specs/<uc-id>/tasks.md`
 4. Implementare seguendo le guardrails
 5. Testare (unit + integration)
 6. Review e merge
 
-## Priorità
 
-- P0: Funzionalità core richieste dalla challenge
-- P1: Hardening sicurezza (secret esternalizzato, CORS, rate limiting)
-- P2: Miglioramenti UX (error handling, validazioni frontend)
-- P3: Ottimizzazioni (caching, query optimization)
+## Way of working
+Il team predilige la generazione di file di specifica meno  prolissi
 
-## Rischi
 
-| Rischio | Mitigazione |
-|---|---|
-| JWT secret hardcoded | Esternalizzare in variabili d'ambiente |
-| CORS aperto | Configurare origini specifiche |
-| Mancanza error handler globale | Implementare `@ControllerAdvice` |
-| Nessun rate limiting | Aggiungere filtro o Spring Boot Actuator |
+## Avvio Environment 
+- Avviare sempre il progetto e i test utilizzando Docker (`docker-compose`) su WSL

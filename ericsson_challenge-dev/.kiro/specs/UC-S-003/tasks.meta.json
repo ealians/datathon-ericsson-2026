@@ -1,0 +1,165 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration test": {
+      "status": "passed",
+      "failingExample": "Tests run: 4, Failures: 1, Errors: 2, Skipped: 0\n\nCounterexample 1 - shouldNotFilter_returnsTrue_forCreateFirstUser: java.lang.NoSuchMethodException: org.elis.ericsson.datathon.user_management.security.JwtAuthenticationFilter.shouldNotFilter(jakarta.servlet.http.HttpServletRequest) — confirms shouldNotFilter() method does NOT exist, so the JWT filter executes on ALL requests including /api/auth/createFirstUser\n\nCounterexample 2 - authController_declares_createFirstUser: org.opentest4j.AssertionFailedError: [AuthController interface should declare createFirstUser method] Expecting value to be true but was false — confirms createFirstUser is NOT declared in the AuthController interface\n\nCounterexample 3 - endpoints_hasCreateFirstUserConstant: java.lang.NoSuchFieldException: CREATE_FIRST_USER — confirms the constant CREATE_FIRST_USER does NOT exist in Endpoints.java\n\nTest 4 (securityConfig permitAll) passed because endpoint is currently accessible via wildcard /api/auth/** → permitAll(), but without explicit POST-specific rule",
+      "lastRunTimestamp": 1781685353346
+    },
+    "2. Write preservation property tests (BEFORE implementing fix)": {
+      "status": "passed",
+      "lastRunTimestamp": 1781686104492
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684961403
+      },
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684971010
+      },
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781685368956
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684962570
+      },
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781685373101
+      },
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686128734
+      }
+    ],
+    "3.1 Aggiungere costante `CREATE_FIRST_USER` in `Endpoints.java`": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684963324
+      },
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686137770
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686169393
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686188348
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686410710
+      }
+    ],
+    "3.3 Aggiungere `@Override` a `AuthControllerImpl.createFirstUser`": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684963657
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686173960
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686690973
+      }
+    ],
+    "3.4 Aggiungere `shouldNotFilter()` override al `JwtAuthenticationFilter`": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684963783
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686174406
+      }
+    ],
+    "3.5 Aggiungere regola esplicita `permitAll()` per `POST /api/auth/createFirstUser` in `SecurityConfig`": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684963898
+      }
+    ],
+    "3.6 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684964040
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686174957
+      }
+    ],
+    "3.7 Verify preservation tests still pass": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684964211
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686175264
+      }
+    ],
+    "4. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "a92d5a88-3dcf-47e8-a544-04847ba133dd",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781684964359
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686175519
+      }
+    ],
+    "3.2 Dichiarare metodo `createFirstUser` nell'interfaccia `AuthController`": [
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686173126
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686417118
+      },
+      {
+        "executionId": "ec9aab6b-14d5-45a3-a599-e795a5bb57b5",
+        "chatSessionId": "sess_0395ab8d-6b5d-40f4-a49e-e3c2c1420e1c",
+        "timestamp": 1781686681331
+      }
+    ]
+  }
+}
