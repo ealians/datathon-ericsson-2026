@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "datathon-db": {
+      "command": "docker",
+      "args": ["exec", "-i", "datathon-mcp-server", "python", "server.py"],
+      "env": {}
+    }
+  }
+}

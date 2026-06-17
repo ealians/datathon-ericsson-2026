@@ -44,6 +44,26 @@ services:
       postgres:
         condition: service_healthy
 
+  # ==========================================
+  # MCP Server (Python)
+  # ==========================================
+  mcp-server:
+    build:
+      context: ./mcp-server
+    container_name: datathon-mcp-server
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-datathon_db}
+      DB_USERNAME: ${DB_USERNAME:-datathon_user}
+      DB_PASSWORD: ${DB_PASSWORD:-datathon_pass}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
 volumes:
   postgres_data:
     driver: local
