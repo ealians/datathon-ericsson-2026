@@ -26,4 +26,7 @@ Applicazione Spring Boot 3.3.5 (Java 17) per la gestione profili utente – Data
 
 
 ## Test environment
-- If JAVA_HOME is not avaialable, use docker to run test cases
+- Avviare sempre il progetto e i test utilizzando Docker (`docker-compose`)
+- Non eseguire `mvn` direttamente sulla macchina host; utilizzare il container Docker per build, test e run
+- Se JAVA_HOME non è disponibile, usare Docker per eseguire i test
+

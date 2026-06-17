@@ -20,21 +20,8 @@ Evolvere l'applicazione User Profile Management per la Datathon Ericsson 2026, m
 5. Testare (unit + integration)
 6. Review e merge
 
-## Priorità
-
-- P0: Funzionalità core richieste dalla challenge
-- P1: Hardening sicurezza (secret esternalizzato, CORS, rate limiting)
-- P2: Miglioramenti UX (error handling, validazioni frontend)
-- P3: Ottimizzazioni (caching, query optimization)
 
 ## Way of working
 Il team predilige la generazione di file di specifica meno  prolissi
 
-## Rischi
 
-| Rischio | Mitigazione |
-|---|---|
-| JWT secret hardcoded | Esternalizzare in variabili d'ambiente |
-| CORS aperto | Configurare origini specifiche |
-| Mancanza error handler globale | Implementare `@ControllerAdvice` |
-| Nessun rate limiting | Aggiungere filtro o Spring Boot Actuator |
