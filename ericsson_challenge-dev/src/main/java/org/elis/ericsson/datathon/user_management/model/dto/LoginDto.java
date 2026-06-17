@@ -18,7 +18,7 @@ public class LoginDto {
     public String toString() {
         return "LoginDto{" +
                 "email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                ", password='[PROTECTED]'" +
                 '}';
     }
 }

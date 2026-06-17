@@ -35,7 +35,7 @@ public class SignUpRequestDto {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email=" + email +
-                ", password='" + password + '\'' +
+                ", password='[PROTECTED]'" +
                 '}';
     }
 }

@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<AuthResponseDTO> login(LoginDto loginDto) {
         try {
-            logger.debug("Enter into AuthService.login : Parameters : {}", loginDto);
+            logger.debug("Enter into AuthService.login : Parameters : email={}", loginDto.getEmail());
             UserProfile user;
             UsernamePasswordAuthenticationToken authenticationToken;
 
@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<UserProfile> registerUser(SignUpRequestDto signUpRequestDto) throws RequestError {
         try {
-            logger.debug("Enter into AuthService.registerUser : Parameters : {}", signUpRequestDto);
+            logger.debug("Enter into AuthService.registerUser : Parameters : email={}", signUpRequestDto.getEmail());
             // Check if the email is already in use.
             if (userProfileRepository.existsByEmail(signUpRequestDto.getEmail()))
                 throw new RequestError("Email " + signUpRequestDto.getEmail() + " is already in use!");
