@@ -60,5 +60,5 @@ inclusion: always
 - Do not delete or disable existing tests.
 - When adding new functionality, include or suggest corresponding unit tests in `src/test/`.
 - Use the existing test framework and patterns already present in the project.
-
+- Non eseguire `mvn` direttamente sulla macchina host; utilizzare il container Docker per build, test e run
 

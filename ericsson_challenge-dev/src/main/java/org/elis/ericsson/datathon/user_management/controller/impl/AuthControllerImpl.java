@@ -7,7 +7,9 @@ import org.elis.ericsson.datathon.user_management.controller.AuthController;
 import org.elis.ericsson.datathon.user_management.model.dto.AuthResponseDTO;
 import org.elis.ericsson.datathon.user_management.model.dto.LoginDto;
 import org.elis.ericsson.datathon.user_management.model.dto.TokenRefreshResponseDto;
+import org.elis.ericsson.datathon.user_management.model.dto.request.CreateFirstUserRequestDto;
 import org.elis.ericsson.datathon.user_management.model.dto.request.SignUpRequestDto;
+import org.elis.ericsson.datathon.user_management.model.dto.response.CreateFirstUserResponseDto;
 import org.elis.ericsson.datathon.user_management.model.entity.Role;
 import org.elis.ericsson.datathon.user_management.model.entity.UserProfile;
 import org.elis.ericsson.datathon.user_management.model.entity.UserPrincipal;
@@ -21,8 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.elis.ericsson.datathon.user_management.constants.Endpoints.API;
-import static org.elis.ericsson.datathon.user_management.constants.Endpoints.AUTH;
+import static org.elis.ericsson.datathon.user_management.constants.Endpoints.*;
 
 @RestController
 @RequestMapping(API + AUTH)
@@ -92,9 +93,11 @@ public class AuthControllerImpl implements AuthController {
      *
      * @return the created user
      */
-    @PostMapping("/createFirstUser")
-    public ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception {
-        return authService.createFirstUser(req);
+    @Override
+    @PostMapping(CREATE_FIRST_USER)
+    public ResponseEntity<CreateFirstUserResponseDto> createFirstUser(
+            @RequestBody @Valid CreateFirstUserRequestDto requestDto) throws Exception {
+        return authService.createFirstUser(requestDto);
     }
 }
 

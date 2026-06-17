@@ -2,6 +2,8 @@ package org.elis.ericsson.datathon.user_management.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.elis.ericsson.datathon.user_management.model.dto.request.CreateFirstUserRequestDto;
+import org.elis.ericsson.datathon.user_management.model.dto.response.CreateFirstUserResponseDto;
 import org.elis.ericsson.datathon.user_management.model.entity.UserProfile;
 import org.elis.ericsson.datathon.user_management.model.exception.RequestError;
 import org.elis.ericsson.datathon.user_management.model.dto.AuthResponseDTO;
@@ -22,7 +24,7 @@ public interface AuthService {
 
     ResponseEntity<TokenRefreshResponseDto> refreshtoken(String refreshToken) throws Exception;
 
-    ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception;
+    ResponseEntity<CreateFirstUserResponseDto> createFirstUser(CreateFirstUserRequestDto requestDto) throws Exception;
 
     ResponseEntity<UserMeInfo> getCurrentUser(UserPrincipal userPrincipal);
 

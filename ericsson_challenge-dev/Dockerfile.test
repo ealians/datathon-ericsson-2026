@@ -1,0 +1,15 @@
+FROM maven:3.9-eclipse-temurin-17
+
+WORKDIR /app
+
+# Copy pom.xml and download dependencies (layer cache)
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+RUN mvn dependency:go-offline -B
+
+# Copy sources
+COPY src ./src
+
+# Default command: run tests
+CMD ["mvn", "test", "-B"]

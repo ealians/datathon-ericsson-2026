@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.elis.ericsson.datathon.user_management.model.dto.AuthResponseDTO;
 import org.elis.ericsson.datathon.user_management.model.dto.LoginDto;
 import org.elis.ericsson.datathon.user_management.model.dto.TokenRefreshResponseDto;
+import org.elis.ericsson.datathon.user_management.model.dto.request.CreateFirstUserRequestDto;
 import org.elis.ericsson.datathon.user_management.model.dto.request.SignUpRequestDto;
+import org.elis.ericsson.datathon.user_management.model.dto.response.CreateFirstUserResponseDto;
 import org.elis.ericsson.datathon.user_management.model.entity.*;
 import org.elis.ericsson.datathon.user_management.model.exception.ExpiredJwtException;
 import org.elis.ericsson.datathon.user_management.model.exception.InvalidCredentialsException;
@@ -170,9 +172,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception {
+    public ResponseEntity<CreateFirstUserResponseDto> createFirstUser(CreateFirstUserRequestDto requestDto) throws Exception {
         try {
-            logger.debug("Enter into AuthService.createFirstUser : Parameters : {}", req);
+            logger.debug("Enter into AuthService.createFirstUser");
             // Check if the first user is already present.
             if (userProfileRepository.count() > 0)
                 throw new Exception("First user already present!");
@@ -197,21 +199,28 @@ public class AuthServiceImpl implements AuthService {
                 roles.add(ruoloUser.get());
             }
 
-
             UserProfile user = new UserProfile();
-            user.setEmail("admin@elis.org");
-            user.setFirstName("firstName_admin");
-            user.setLastName("lastName_admin");
-            user.setPassword(passwordEncoder.encode("password"));
+            user.setEmail(requestDto.getEmail().toLowerCase());
+            user.setFirstName(requestDto.getFirstName());
+            user.setLastName(requestDto.getLastName());
+            user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
             user.setRoles(roles);
             // Save the user in the database.
             try {
                 userProfileRepository.save(user);
             } catch (Exception e) {
                 throw new InvalidCredentialsException("User already present!");
-
             }
-            return ResponseEntity.ok(user);
+
+            CreateFirstUserResponseDto responseDto = CreateFirstUserResponseDto.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .roles(user.getRoles())
+                    .build();
+
+            return ResponseEntity.ok(responseDto);
         } catch (Exception e) {
             logger.error("Error in AuthServiceImpl.createFirstUser" + e.getMessage());
             throw e;

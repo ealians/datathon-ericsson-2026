@@ -4,10 +4,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 
+import org.elis.ericsson.datathon.user_management.constants.Endpoints;
 import org.elis.ericsson.datathon.user_management.model.dto.TokenRefreshResponseDto;
 import org.elis.ericsson.datathon.user_management.model.dto.AuthResponseDTO;
 import org.elis.ericsson.datathon.user_management.model.dto.LoginDto;
+import org.elis.ericsson.datathon.user_management.model.dto.request.CreateFirstUserRequestDto;
 import org.elis.ericsson.datathon.user_management.model.dto.request.SignUpRequestDto;
+import org.elis.ericsson.datathon.user_management.model.dto.response.CreateFirstUserResponseDto;
 import org.elis.ericsson.datathon.user_management.model.entity.Role;
 import org.elis.ericsson.datathon.user_management.model.entity.UserProfile;
 import org.elis.ericsson.datathon.user_management.model.exception.RequestError;
@@ -51,4 +54,7 @@ public interface AuthController {
 
     @GetMapping("/getSession")
     ResponseEntity<AuthResponseDTO> getSession();
+
+    @PostMapping(Endpoints.CREATE_FIRST_USER)
+    ResponseEntity<CreateFirstUserResponseDto> createFirstUser(@RequestBody @Valid CreateFirstUserRequestDto requestDto) throws Exception;
 }
