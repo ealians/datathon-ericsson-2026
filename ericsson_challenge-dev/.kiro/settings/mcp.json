@@ -9,6 +9,11 @@
       "command": "docker",
       "args": ["exec", "-i", "datathon-mcp-docs", "python", "server.py"],
       "env": {}
+    },
+    "datathon-metrics": {
+      "command": "docker",
+      "args": ["exec", "-i", "datathon-mcp-metrics", "python", "server.py"],
+      "env": {}
     }
   }
 }

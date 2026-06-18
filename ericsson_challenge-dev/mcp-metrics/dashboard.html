@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datathon App - Metrics Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 8px; color: #00d4ff; font-size: 1.8rem; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+        .health-banner { text-align: center; padding: 12px; border-radius: 8px; margin-bottom: 24px; font-weight: bold; font-size: 1.1rem; }
+        .health-up { background: #0d3320; border: 1px solid #2ecc71; color: #2ecc71; }
+        .health-down { background: #3d1515; border: 1px solid #e74c3c; color: #e74c3c; }
+        .category { margin-bottom: 20px; }
+        .category-header { background: #16213e; padding: 10px 16px; border-radius: 8px 8px 0 0; border-left: 4px solid #00d4ff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .category-header h2 { font-size: 1rem; color: #00d4ff; text-transform: capitalize; }
+        .category-header .count { background: #0f3460; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; color: #aaa; }
+        .metrics-table { width: 100%; border-collapse: collapse; background: #0f1a2e; border-radius: 0 0 8px 8px; overflow: hidden; }
+        .metrics-table th { background: #0f3460; padding: 8px 12px; text-align: left; font-size: 0.75rem; color: #aaa; text-transform: uppercase; }
+        .metrics-table td { padding: 6px 12px; border-bottom: 1px solid #1a2a4a; font-size: 0.85rem; }
+        .metrics-table tr:last-child td { border-bottom: none; }
+        .metrics-table tr:hover { background: #162040; }
+        .metric-name { color: #fff; font-family: monospace; }
+        .metric-labels { color: #888; font-family: monospace; font-size: 0.75rem; }
+        .metric-value { color: #2ecc71; font-weight: bold; font-family: monospace; text-align: right; }
+        .metric-help { color: #666; font-size: 0.75rem; max-width: 300px; }
+        .refresh-btn { display: block; margin: 0 auto 20px; padding: 10px 24px; background: #0f3460; border: 1px solid #00d4ff; color: #00d4ff; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+        .refresh-btn:hover { background: #1a4a80; }
+        .timestamp { text-align: center; color: #555; font-size: 0.8rem; margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <h1>📊 Datathon Metrics Dashboard</h1>
+    <p class="subtitle">Live metrics from Spring Boot Actuator / Prometheus</p>
+    <button class="refresh-btn" onclick="loadMetrics()">⟳ Refresh Metrics</button>
+    <div id="health-banner" class="health-banner health-up">Loading...</div>
+    <div id="metrics-container"><p style="text-align:center;color:#888;padding:40px">Loading metrics...</p></div>
+    <p class="timestamp" id="timestamp"></p>
+
+    <script>
+        const ACTUATOR_BASE = 'http://' + window.location.hostname + ':8080/actuator';
+
+        async function loadHealth() {
+            try {
+                const r = await fetch(ACTUATOR_BASE + '/health');
+                const data = await r.json();
+                const banner = document.getElementById('health-banner');
+                const components = Object.entries(data.components || {}).map(([k, v]) => `${k}: ${v.status}`).join(' | ');
+                banner.textContent = `${data.status} — ${components}`;
+                banner.className = 'health-banner ' + (data.status === 'UP' ? 'health-up' : 'health-down');
+            } catch (e) {
+                const banner = document.getElementById('health-banner');
+                banner.textContent = 'UNREACHABLE';
+                banner.className = 'health-banner health-down';
+            }
+        }
+
+        async function loadMetrics() {
+            await loadHealth();
+            try {
+                const r = await fetch(ACTUATOR_BASE + '/prometheus');
+                const text = await r.text();
+                renderMetrics(text);
+                document.getElementById('timestamp').textContent = 'Last updated: ' + new Date().toLocaleString();
+            } catch (e) {
+                document.getElementById('metrics-container').innerHTML = '<p style="text-align:center;color:#e74c3c;padding:40px">Error loading metrics. Is the app running?</p>';
+            }
+        }
+
+        function renderMetrics(text) {
+            const lines = text.split('\n');
+            const categories = {};
+            let currentHelp = '';
+
+            for (const line of lines) {
+                if (line.startsWith('# HELP ')) {
+                    currentHelp = line.substring(7).replace(/^\S+\s/, '');
+                } else if (line.startsWith('#') || !line.trim()) {
+                    continue;
+                } else {
+                    let name, labels = '', value;
+                    if (line.includes('{')) {
+                        name = line.split('{')[0];
+                        labels = line.split('{')[1].split('}')[0];
+                        value = line.split('} ')[1];
+                    } else {
+                        const parts = line.split(' ');
+                        name = parts[0];
+                        value = parts[1];
+                    }
+                    const cat = name.split('_')[0];
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push({ name, labels, value, help: currentHelp });
+                }
+            }
+
+            let html = '';
+            for (const [cat, metrics] of Object.entries(categories).sort()) {
+                html += `<div class="category">
+                    <div class="category-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? '' : 'none'">
+                        <h2>${cat}</h2><span class="count">${metrics.length} metrics</span>
+                    </div>
+                    <table class="metrics-table">
+                        <thead><tr><th>Metric</th><th>Labels</th><th>Description</th><th style="text-align:right">Value</th></tr></thead>
+                        <tbody>`;
+                for (const m of metrics) {
+                    const val = parseFloat(m.value);
+                    const formatted = isNaN(val) ? m.value : (val > 1e6 ? (val / 1e6).toFixed(2) + 'M' : val > 1e3 ? (val / 1e3).toFixed(2) + 'K' : val.toFixed(2));
+                    html += `<tr>
+                        <td class="metric-name">${m.name}</td>
+                        <td class="metric-labels">${m.labels || '—'}</td>
+                        <td class="metric-help">${m.help}</td>
+                        <td class="metric-value">${formatted}</td>
+                    </tr>`;
+                }
+                html += '</tbody></table></div>';
+            }
+            document.getElementById('metrics-container').innerHTML = html;
+        }
+
+        loadMetrics();
+    </script>
+</body>
+</html>

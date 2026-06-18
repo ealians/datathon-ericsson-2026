@@ -1,0 +1,282 @@
+---
+# Ericsson Datathon 2026
+## User Profile Management System
+### Academy Generative AI — AI-Driven Development with Kiro
+
+---
+# Agenda
+
+- Panoramica del Progetto
+- Stack Tecnologico & Architettura
+- Use Case Implementati
+- Approccio Spec-Driven con Kiro
+- MCP Server Ecosystem
+- Security Hardening
+- Demo Architecture
+- Key Takeaways
+
+---
+# Panoramica del Progetto
+
+- Applicazione Spring Boot 3.3.5 (Java 17)
+- Gestione profili utente con autenticazione JWT
+- API REST + interfaccia web Thymeleaf/Bootstrap
+- Ruoli: ADMIN / USER
+- Deploy containerizzato con Docker Compose
+
+> L'obiettivo è dimostrare come l'AI-driven development con Kiro accelera lo sviluppo e migliora la qualità del codice.
+
+---
+# Stack Tecnologico
+
+| Layer | Tecnologia |
+|-------|-----------|
+| Runtime | Java 17 |
+| Framework | Spring Boot 3.3.5 |
+| Security | Spring Security 6 + JWT (HS512) |
+| ORM | Spring Data JPA / Hibernate |
+| DB (dev) | H2 file-based |
+| DB (prod) | PostgreSQL 16 |
+| Frontend | Thymeleaf + Bootstrap 5.3 |
+| Build | Maven Wrapper |
+| Container | Docker multi-stage + Compose |
+| AI Tooling | Kiro + MCP Servers |
+
+---
+# Architettura a Layer
+
+```
+        Client (Browser / API)
+               │
+    ┌──────────┴──────────┐
+    │  REST Controllers   │  Web Controllers (Thymeleaf)
+    └──────────┬──────────┘
+               │
+    ┌──────────▼──────────┐
+    │   Service Layer     │
+    └──────────┬──────────┘
+               │
+    ┌──────────▼──────────┐
+    │   Repository (JPA)  │
+    └──────────┬──────────┘
+               │
+    ┌──────────▼──────────┐
+    │   Database (H2/PG)  │
+    └─────────────────────┘
+```
+
+- Filtro JWT intercetta ogni richiesta
+- Sessioni stateless, CSRF disabilitato
+
+---
+# Use Case Implementati
+
+| ID | Nome | Stato |
+|----|------|-------|
+| UC-B-001 | Bugfix: JPA Auditing mancante | ✅ Completato |
+| MCP_Server | MCP DB Server (query NL → SQL) | ✅ Completato |
+| UC-MCP-002 | MCP Docs Server (documentazione) | ✅ Completato |
+| UC-MCP-003 | MCP Metrics Server (Actuator) | ✅ Completato |
+| UC-MCP-004 | MCP NL-to-SQL con isolation | 📋 Specificato |
+| UC-MCP-005 | Demo end-to-end governance | 📋 Specificato |
+| UC-SEC-001 | Security Hardening (12 vulnerabilità) | ✅ Completato |
+
+---
+# Approccio Spec-Driven
+
+## Workflow Kiro
+
+```
+1. Requirements  →  .kiro/specs/<uc>/spec.md
+2. Design        →  .kiro/specs/<uc>/design.md
+3. Tasks         →  .kiro/specs/<uc>/tasks.md
+4. Implement     →  Codice guidato da task list
+5. Test          →  Verifica acceptance criteria
+6. Review        →  Validazione guardrails
+```
+
+> Ogni use case segue il ciclo completo: requisiti → design → task → implementazione → test
+
+---
+# Principi Guida
+
+- **Incrementale**: modifiche autocontenute e testabili
+- **Backward-compatible**: API esistenti intatte
+- **Sicurezza first**: ogni endpoint rispetta il security baseline
+- **Documentazione**: spec completa per ogni use case
+- **Guardrails**: regole architetturali e di sicurezza applicate automaticamente
+
+---
+# UC-B-001: JPA Auditing Fix
+
+## Problema
+- `@EnableJpaAuditing` mancante
+- `DateAudit` con `@CreatedDate`/`@LastModifiedDate` non funzionante
+- Test JPA falliscono
+
+## Soluzione
+- Creata classe `JpaAuditingConfig.java` nel package `configuration/`
+- Un solo file, zero nuove dipendenze
+- Test di integrazione aggiunti
+
+---
+# MCP Server Ecosystem
+
+## 3 Server MCP in Docker
+
+```
+┌─────────────────────────────────────────────────┐
+│                  Kiro (IDE)                      │
+└──────┬──────────────┬──────────────┬────────────┘
+       │ stdio        │ stdio        │ stdio
+┌──────▼─────┐ ┌──────▼─────┐ ┌─────▼──────────┐
+│  MCP DB    │ │  MCP Docs  │ │  MCP Metrics   │
+│  (Python)  │ │  (Python)  │ │  (Python)      │
+└──────┬─────┘ └──────┬─────┘ └──────┬─────────┘
+       │               │              │
+       ▼               ▼              ▼
+   PostgreSQL     Filesystem      Actuator API
+```
+
+---
+# MCP DB Server (MCP_Server)
+
+## Tool esposti
+- `get_schema` — schema tabelle DB
+- `query_database` — SELECT read-only (blocca scritture)
+- `seed_database` — popola dati test (idempotente)
+- `clean_database` — ripristina stato iniziale
+
+## Sicurezza
+- Solo query SELECT permesse
+- Credenziali via variabili d'ambiente
+- Validazione anti-injection
+
+---
+# UC-MCP-002: MCP Docs Server
+
+## Tool esposti
+- `list_docs` — elenco documenti disponibili
+- `read_doc` — contenuto integrale di un documento
+- `search_docs` — ricerca keyword con contesto
+
+## Sicurezza
+- Volume montato in read-only
+- Path traversal prevention
+- Nessun accesso al filesystem esterno a `/docs`
+
+---
+# UC-MCP-003: MCP Metrics Server
+
+## Tool esposti
+- `health` — stato salute applicazione (UP/DOWN)
+- `list_metrics` — elenco metriche disponibili
+- `get_metric` — dettaglio singola metrica
+- `prometheus` — output formato Prometheus
+
+## Sicurezza
+- Solo GET HTTP (read-only)
+- Timeout 5s su richieste
+- Validazione input con regex
+- Dashboard HTML su porta 9090
+
+---
+# UC-SEC-001: Security Hardening
+
+## 12 Vulnerabilità risolte
+
+### Critical (3)
+- JWT secret esternalizzato in env var
+- Credenziali DB via environment
+- `createFirstUser` protetto/disabilitato
+
+### High (4)
+- Password non esposta nei DTO/log
+- CORS restrittivo (configurabile)
+- Validazione Jakarta su LoginDto
+- Protezione IDOR su edit profilo
+
+### Medium (5)
+- API jjwt non-deprecated
+- Security headers (HSTS, X-Frame, nosniff)
+- Password policy (min 8 caratteri)
+- Endpoint signup → DTO (no entity)
+- Token expiration ridotta a 15 min
+
+---
+# Governance & Guardrails
+
+## Regole applicate automaticamente
+
+- Nessuna modifica fuori scope
+- Architettura layered preservata
+- Nessuna dipendenza senza approvazione
+- Credenziali mai nel codice
+- Test esistenti mai eliminati
+- Output confinato nel workspace
+- Comandi limitati a build tools
+
+> Documentate in `.kiro/steering/guardrails.md`
+
+---
+# Docker Compose — Architettura Completa
+
+```yaml
+services:
+  postgres:       # PostgreSQL 16 Alpine + healthcheck
+  app:            # Spring Boot (profilo docker)
+  mcp-server:     # MCP DB queries (Python)
+  mcp-docs:       # MCP documentazione (Python, read-only)
+  mcp-metrics:    # MCP metriche Actuator (Python)
+```
+
+- Tutti i servizi orchestrati con `depends_on`
+- Health check per sequenza avvio corretta
+- Volumi persistenti per dati DB
+
+---
+# Demo Flow: AI-Driven Development
+
+```
+ Developer                    Kiro + MCP
+     │                           │
+     │  "Mostrami lo schema DB"  │
+     │ ─────────────────────────►│──► MCP DB: get_schema
+     │                           │
+     │  "Quanti utenti ci sono?" │
+     │ ─────────────────────────►│──► MCP DB: query_database
+     │                           │
+     │  "Health check app?"      │
+     │ ─────────────────────────►│──► MCP Metrics: health
+     │                           │
+     │  "Cerca JWT nel progetto" │
+     │ ─────────────────────────►│──► MCP Docs: search_docs
+     │                           │
+```
+
+> L'agente AI usa i server MCP per analizzare, interrogare e documentare il codice senza uscire dalla chat.
+
+---
+# Key Takeaways
+
+- **Spec-Driven AI Development**: requisiti strutturati guidano l'implementazione
+- **MCP come bridge**: l'AI accede a DB, docs e metriche via protocollo standard
+- **Security by design**: vulnerabilità identificate e risolte sistematicamente
+- **Guardrails automatiche**: regole architetturali applicate a ogni cambio
+- **Docker-first**: ambiente riproducibile e isolato
+- **Documentazione viva**: sempre aggiornata e consultabile via MCP
+
+---
+# Q&A
+
+## Risorse
+
+- `README.md` — Quick start e configurazione
+- `project.md` — Analisi architetturale completa
+- `.kiro/specs/` — Specifiche di tutti gli use case
+- `.kiro/steering/guardrails.md` — Regole di governance
+
+## Contatti
+
+**Team Datathon Ericsson 2026**
+Academy Generative AI

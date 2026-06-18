@@ -40,6 +40,9 @@ services:
       DB_NAME: ${DB_NAME:-datathon_db}
       DB_USERNAME: ${DB_USERNAME:-datathon_user}
       DB_PASSWORD: ${DB_PASSWORD:-datathon_pass}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-fallback-key-do-not-use-in-production-must-be-at-least-64-bytes-long-for-hs512!}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-Admin123!}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8080}
     depends_on:
       postgres:
         condition: service_healthy
@@ -77,6 +80,23 @@ services:
       - ./README.md:/docs/README.md:ro
       - ./project.md:/docs/project.md:ro
       - /tmp
+    stdin_open: true
+    tty: true
+
+  # ==========================================
+  # MCP Metrics Server (Python)
+  # ==========================================
+  mcp-metrics:
+    build:
+      context: ./mcp-metrics
+    container_name: datathon-mcp-metrics
+    restart: unless-stopped
+    environment:
+      ACTUATOR_BASE_URL: http://app:8080/actuator
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
     stdin_open: true
     tty: true
 

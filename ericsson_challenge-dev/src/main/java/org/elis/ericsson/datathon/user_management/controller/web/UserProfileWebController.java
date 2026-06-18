@@ -6,6 +6,7 @@ import org.elis.ericsson.datathon.user_management.model.entity.UserProfile;
 import org.elis.ericsson.datathon.user_management.model.exception.ItemNotFoundException;
 import org.elis.ericsson.datathon.user_management.repository.RoleRepository;
 import org.elis.ericsson.datathon.user_management.service.UserProfileService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -70,7 +71,12 @@ public class UserProfileWebController {
 
     @PostMapping("/edit/{id}")
     public String editProfile(@PathVariable Long id, @ModelAttribute("editProfile") UserProfile updatedProfile,
-                              @RequestParam("roles") List<Long> roleIds) {
+                              @RequestParam("roles") List<Long> roleIds,
+                              @AuthenticationPrincipal UserPrincipal principal) {
+        if (!principal.getId().equals(id) && principal.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("Cannot edit another user's profile");
+        }
         List<Role> roles = new ArrayList<>();
         for (Long roleId : roleIds) {
             roles.add(roleRepository.findById(roleId)

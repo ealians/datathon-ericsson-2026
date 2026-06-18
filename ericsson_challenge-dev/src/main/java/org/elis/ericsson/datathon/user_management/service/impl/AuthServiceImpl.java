@@ -101,7 +101,6 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<UserProfile> registerUser(SignUpRequestDto signUpRequestDto) throws RequestError {
         try {
             logger.debug("Enter into AuthService.registerUser : Parameters : {}", signUpRequestDto);
-            // Check if the email is already in use.
             if (userProfileRepository.existsByEmail(signUpRequestDto.getEmail()))
                 throw new RequestError("Email " + signUpRequestDto.getEmail() + " is already in use!");
 
@@ -109,13 +108,10 @@ public class AuthServiceImpl implements AuthService {
                 throw new RequestError("Privacy Policy must be accepted!");
             }
 
-            // Trying to find the role with the given name, if not found a bad request exception will be thrown.
             Role role = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new ItemNotFoundException(ROLE_NOT_FOUND));
-            // Create the collection to store all the roles.
             ArrayList<Role> roles = new ArrayList<>();
             roles.add(role);
 
-            // Creating user's account
             UserProfile user = new UserProfile();
             user.setFirstName(signUpRequestDto.getFirstName());
             user.setLastName(signUpRequestDto.getLastName());
@@ -123,12 +119,16 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
             user.setRoles(roles);
 
-            // Save the user in the database.
             UserProfile result = userProfileRepository.save(user);
-            result.setPassword(null);
 
-            // Return the created user.
-            return ResponseEntity.ok(result);
+            // Return sanitized entity (no password, no internal details leaked)
+            UserProfile response = new UserProfile();
+            response.setId(result.getId());
+            response.setEmail(result.getEmail());
+            response.setFirstName(result.getFirstName());
+            response.setLastName(result.getLastName());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RequestError e) {
             logger.error("Error in AuthServiceImpl.registerUser " + e.getMessage());
             throw (e);
@@ -172,16 +172,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> createFirstUser(HttpServletRequest req) throws Exception {
         try {
-            logger.debug("Enter into AuthService.createFirstUser : Parameters : {}", req);
-            // Check if the first user is already present.
+            logger.debug("Enter into AuthService.createFirstUser");
             if (userProfileRepository.count() > 0)
-                throw new Exception("First user already present!");
-            // Get ADMIN and USER role.
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Setup already completed");
+
+            String adminPassword = System.getenv("ADMIN_INITIAL_PASSWORD");
+            if (adminPassword == null || adminPassword.isBlank()) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ADMIN_INITIAL_PASSWORD env not set");
+            }
+
             Optional<Role> ruoloAdmin = roleRepository.findByName("ROLE_ADMIN");
             Optional<Role> ruoloUser = roleRepository.findByName("ROLE_USER");
             ArrayList<Role> roles = new ArrayList<>();
 
-            // If the roles are not present, create them.
             if (ruoloAdmin.isEmpty()) {
                 Role role = new Role();
                 role.setName("ROLE_ADMIN");
@@ -197,21 +200,15 @@ public class AuthServiceImpl implements AuthService {
                 roles.add(ruoloUser.get());
             }
 
-
             UserProfile user = new UserProfile();
             user.setEmail("admin@elis.org");
             user.setFirstName("firstName_admin");
             user.setLastName("lastName_admin");
-            user.setPassword(passwordEncoder.encode("password"));
+            user.setPassword(passwordEncoder.encode(adminPassword));
             user.setRoles(roles);
-            // Save the user in the database.
-            try {
-                userProfileRepository.save(user);
-            } catch (Exception e) {
-                throw new InvalidCredentialsException("User already present!");
 
-            }
-            return ResponseEntity.ok(user);
+            userProfileRepository.save(user);
+            return ResponseEntity.ok(Map.of("message", "Admin user created", "email", "admin@elis.org"));
         } catch (Exception e) {
             logger.error("Error in AuthServiceImpl.createFirstUser" + e.getMessage());
             throw e;

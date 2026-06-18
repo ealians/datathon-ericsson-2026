@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         // Permessi per le risorse pubbliche
-                        .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**", "/actuator/health", "/webjars/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**", "/actuator/**", "/webjars/**", "/css/**", "/js/**").permitAll()
 
                         // Permessi per le pagine pubbliche e profili
                         .requestMatchers(HttpMethod.GET, "/profiles").authenticated() // Accesso agli utenti autenticati
@@ -57,9 +57,11 @@ public class SecurityConfig {
                 // Aggiungi il filtro JWT
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-
-        // Disabilita frame options per H2 console (se necessario)
-        http.headers().frameOptions().disable();
+        // Security headers
+        http.headers(headers -> headers
+                .frameOptions(frame -> frame.deny())
+                .contentTypeOptions(contentType -> {})
+        );
 
         return http.build();
     }

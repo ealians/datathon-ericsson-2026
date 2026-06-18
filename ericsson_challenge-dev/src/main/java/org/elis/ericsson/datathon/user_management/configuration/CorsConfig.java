@@ -9,39 +9,42 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
-/**
- * Il Cross-Origin Resource Sharing (CORS) è un meccanismo che usa header HTTP addizionali
- * per indicare che un dominio dispone dell'autorizzazione per accedere alle risorse selezionate
- * **/
 @Configuration
 public class CorsConfig {
 
-   @Bean
-   public CorsFilter corsFilter() {
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      CorsConfiguration config = new CorsConfiguration();
-      config.setAllowCredentials(false);
-      config.addAllowedOrigin("*"); // e.g. http://domain1.com
-      config.addAllowedMethod("*");
-      config.addAllowedHeader("*");
+    private List<String> getAllowedOrigins() {
+        String origins = System.getenv("CORS_ALLOWED_ORIGINS");
+        if (origins != null && !origins.isBlank()) {
+            return Arrays.asList(origins.split(","));
+        }
+        return List.of("http://localhost:8080");
+    }
 
-      source.registerCorsConfiguration("/**", config);
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(getAllowedOrigins());
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 
-      return new CorsFilter(source);
-   }
-   @Bean
-   public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      CorsConfiguration config = new CorsConfiguration();
-      config.setAllowCredentials(false);
-      config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "*"));
-      config.setAllowedMethods(Collections.singletonList("*"));
-      config.setAllowedHeaders(Collections.singletonList("*"));
-      source.registerCorsConfiguration("/**", config);
-      FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-      bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-      return bean;
-   }
+    @Bean
+    public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(getAllowedOrigins());
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
 }
