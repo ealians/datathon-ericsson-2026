@@ -4,6 +4,11 @@
       "command": "docker",
       "args": ["exec", "-i", "datathon-mcp-server", "python", "server.py"],
       "env": {}
+    },
+    "datathon-docs": {
+      "command": "docker",
+      "args": ["exec", "-i", "datathon-mcp-docs", "python", "server.py"],
+      "env": {}
     }
   }
 }

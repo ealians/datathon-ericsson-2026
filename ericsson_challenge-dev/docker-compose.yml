@@ -64,6 +64,22 @@ services:
     stdin_open: true
     tty: true
 
+  # ==========================================
+  # MCP Docs Server (Python)
+  # ==========================================
+  mcp-docs:
+    build:
+      context: ./mcp-docs
+    container_name: datathon-mcp-docs
+    restart: unless-stopped
+    read_only: true
+    volumes:
+      - ./README.md:/docs/README.md:ro
+      - ./project.md:/docs/project.md:ro
+      - /tmp
+    stdin_open: true
+    tty: true
+
 volumes:
   postgres_data:
     driver: local
