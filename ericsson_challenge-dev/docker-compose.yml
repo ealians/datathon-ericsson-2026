@@ -100,6 +100,27 @@ services:
     stdin_open: true
     tty: true
 
+  # ==========================================
+  # MCP NL Query Server (Python)
+  # ==========================================
+  mcp-nl:
+    build:
+      context: ./mcp-nl
+    container_name: datathon-mcp-nl
+    restart: unless-stopped
+    read_only: true
+    environment:
+      H2_JDBC_URL: jdbc:h2:file:/data/datathon_user_db;ACCESS_MODE_DATA=r;DB_CLOSE_ON_EXIT=FALSE
+      H2_USER: ${DB_USERNAME:-admin}
+      H2_PASSWORD: ${DB_PASSWORD:-dev_password}
+      H2_JAR_PATH: /app/h2.jar
+    volumes:
+      - ./data:/data:ro
+    tmpfs:
+      - /tmp
+    stdin_open: true
+    tty: true
+
 volumes:
   postgres_data:
     driver: local

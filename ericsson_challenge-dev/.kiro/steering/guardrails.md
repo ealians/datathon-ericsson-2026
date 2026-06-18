@@ -63,3 +63,15 @@ inclusion: always
 ## Test environment
 - If JAVA_HOME is not avaialable, use docker to run test cases
 
+
+## NL Query Isolation (UC-MCP-004)
+
+Il server MCP `mcp-nl` per query in linguaggio naturale opera con le seguenti garanzie di isolamento:
+
+1. **Read-only enforcement**: Regex blocca qualsiasi keyword SQL non-SELECT (INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, CREATE, GRANT, REVOKE) prima dell'esecuzione.
+2. **Two-step approval**: La traduzione NL→SQL (`nl_query`) e l'esecuzione (`execute_approved_query`) sono tool separati. L'utente vede e approva la query prima che venga eseguita.
+3. **File-based read-only access**: Il volume H2 è montato con `:ro` e la JDBC URL usa `ACCESS_MODE_DATA=r`.
+4. **Scope limitato**: Il server accede solo al database H2 dev locale, non al PostgreSQL di produzione.
+5. **No data mutation**: Nessun tool di seed/clean — zero possibilità di scrittura.
+6. **Container read-only**: Il filesystem del container è in sola lettura (`read_only: true` in docker-compose).
+7. **Timeout**: Query con timeout massimo di 5 secondi per prevenire DoS.
